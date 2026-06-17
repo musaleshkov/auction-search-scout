@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { getLots } from "../lib/api";
 import type { Lot, SortOption } from "../types/lot";
 import { SelectField } from "@/src/components/SelectField";
+import { useDebounce } from "@/src/hooks/useDebounce";
 
 const PAGE_SIZE = 12;
 
@@ -30,6 +31,7 @@ export default function Home () {
 	const [error, setError] = useState("");
 
 	const closeButtonRef = useRef<HTMLButtonElement | null>(null);
+	const debouncedQuery = useDebounce(query, 300);
 
 	useEffect(() => {
 		let isMounted = true;
@@ -40,7 +42,7 @@ export default function Home () {
 				setError("");
 
 				const response = await getLots({
-					search: query,
+					search: debouncedQuery,
 					category,
 					country,
 					sort,
@@ -74,7 +76,7 @@ export default function Home () {
 		return () => {
 			isMounted = false;
 		};
-	}, [query, category, country, sort, page]);
+	}, [debouncedQuery, category, country, sort, page]);
 
 	useEffect(() => {
 		if (!selectedLot) return;
@@ -264,6 +266,7 @@ export default function Home () {
 							onClick={() => setSelectedLot(lot)}
 							onKeyDown={(event) => {
 								if (event.key === "Enter" || event.key === " ") {
+									event.preventDefault();
 									setSelectedLot(lot);
 								}
 							}}
@@ -273,6 +276,10 @@ export default function Home () {
 								alt={lot.title}
 								className="h-56 w-full shrink-0 bg-stone-200 object-cover"
 								loading="lazy"
+								onError={(event) => {
+									event.currentTarget.src =
+										"https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1200&auto=format&fit=crop";
+								}}
 							/>
 
 							<div className="flex flex-1 flex-col p-5">
@@ -348,9 +355,12 @@ export default function Home () {
 						<img
 							src={selectedLot.image_url}
 							alt={selectedLot.title}
-							className="h-72 w-full object-cover"
+							className="h-72 w-full object-cover" loading="lazy"
+							onError={(event) => {
+								event.currentTarget.src =
+									"https://images.unsplash.com/photo-1518998053901-5348d3961a04?q=80&w=1200&auto=format&fit=crop";
+							}}
 						/>
-
 						<div className="p-6">
 							<div className="mb-3 flex items-center justify-between text-sm text-stone-500">
 								<span>{selectedLot.category}</span>
