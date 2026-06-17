@@ -1,0 +1,23 @@
+{
+  "name": "barnebys-api",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "dist/server.js",
+  "scripts": {
+	"dev": "tsx watch src/server.ts",
+	"build": "tsc",
+	"start": "node dist/server.js"
+  },
+  "dependencies": {
+	"cors": "latest",
+	"dotenv": "latest",
+	"express": "latest"
+  },
+  "devDependencies": {
+	"@types/cors": "latest",
+	"@types/express": "latest",
+	"@types/node": "latest",
+	"tsx": "latest",
+	"typescript": "latest"
+  }
+}
