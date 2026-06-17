@@ -10,3 +10,30 @@ export type Lot = {
 	currency: string;
 	image_url: string;
 };
+
+export type SortOption = "none" | "estimate-asc" | "estimate-desc";
+
+export type LotsQuery = {
+	search?: string;
+	category?: string;
+	country?: string;
+	sort: SortOption;
+	page: number;
+	limit: number;
+};
+
+export type LotsResponse = {
+	data: Lot[];
+	meta: {
+		total: number;
+		page: number;
+		limit: number;
+		totalPages: number;
+		hasNextPage: boolean;
+		hasPreviousPage: boolean;
+	};
+	filters: {
+		categories: string[];
+		countries: string[];
+	};
+};

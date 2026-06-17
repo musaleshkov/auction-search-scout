@@ -1,26 +1,32 @@
-import type { Lot } from "../types/lot";
+import type { LotsResponse, SortOption } from "../types/lot";
 
 const API_BASE_URL =
 	process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
-type LotsApiResponse = Lot[] | { lots: Lot[] };
+type GetLotsParams = {
+	search?: string;
+	category?: string;
+	country?: string;
+	sort?: SortOption;
+	page?: number;
+	limit?: number;
+};
 
-export async function getLots(): Promise<Lot[]> {
-	const response = await fetch(`${API_BASE_URL}/lots`);
+export async function getLots (params: GetLotsParams = {}): Promise<LotsResponse> {
+	const url = new URL(`${API_BASE_URL}/lots`);
+
+	if (params.search) url.searchParams.set("search", params.search);
+	if (params.category) url.searchParams.set("category", params.category);
+	if (params.country) url.searchParams.set("country", params.country);
+	if (params.sort) url.searchParams.set("sort", params.sort);
+	if (params.page) url.searchParams.set("page", String(params.page));
+	if (params.limit) url.searchParams.set("limit", String(params.limit));
+
+	const response = await fetch(url.toString());
 
 	if (!response.ok) {
 		throw new Error("Failed to fetch lots");
 	}
 
-	const data = (await response.json()) as LotsApiResponse;
-
-	if (Array.isArray(data)) {
-		return data;
-	}
-
-	if ("lots" in data && Array.isArray(data.lots)) {
-		return data.lots;
-	}
-
-	return [];
+	return response.json();
 }

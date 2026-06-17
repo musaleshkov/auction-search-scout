@@ -4,7 +4,9 @@ import express from "express";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Lot } from "./types.js";
+
+import { buildLotsResponse } from "./lots.service.js";
+import type { Lot, SortOption } from "./types.js";
 
 dotenv.config();
 
@@ -16,13 +18,13 @@ const __dirname = path.dirname(__filename);
 
 app.use(
 	cors({
-		origin: process.env.CORS_ORIGIN || "http://localhost:3000"
-	})
+		origin: process.env.CORS_ORIGIN || "http://localhost:3000",
+	}),
 );
 
 app.use(express.json());
 
-function loadLots(): Lot[] {
+function loadLots (): Lot[] {
 	const filePath = path.join(__dirname, "../data/lots.json");
 	const json = fs.readFileSync(filePath, "utf-8");
 
@@ -39,13 +41,49 @@ function loadLots(): Lot[] {
 	return [];
 }
 
+function getString (value: unknown): string | undefined {
+	return typeof value === "string" && value.trim() ? value : undefined;
+}
+
+function getNumber (value: unknown, fallback: number): number {
+	if (typeof value !== "string") {
+		return fallback;
+	}
+
+	const parsed = Number(value);
+
+	return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+function getSortOption (value: unknown): SortOption {
+	if (
+		value === "estimate-asc" ||
+		value === "estimate-desc" ||
+		value === "none"
+	) {
+		return value;
+	}
+
+	return "none";
+}
+
 app.get("/health", (_req, res) => {
 	res.json({ status: "ok" });
 });
 
-app.get("/lots", (_req, res) => {
+app.get("/lots", (req, res) => {
 	const lots = loadLots();
-	res.json(lots);
+
+	const response = buildLotsResponse(lots, {
+		search: getString(req.query.search),
+		category: getString(req.query.category),
+		country: getString(req.query.country),
+		sort: getSortOption(req.query.sort),
+		page: getNumber(req.query.page, 1),
+		limit: getNumber(req.query.limit, 12),
+	});
+
+	res.json(response);
 });
 
 app.get("/lots/:id", (req, res) => {
