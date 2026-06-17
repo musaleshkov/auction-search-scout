@@ -10,7 +10,7 @@ import { LotCardSkeleton } from "@/src/components/LotCardSkeleton";
 import { LotModal } from "@/src/components/LotModal";
 import { Pagination } from "@/src/components/Pagination";
 import { COUNTRY_NAMES } from "@/src/lib/constants";
-import { SortOption } from "@barnebys/shared";
+import type { SortOption } from "@/src/types/lot";
 
 export default function Home () {
 	const [selectedLot, setSelectedLot] = useState<Lot | null>(null);

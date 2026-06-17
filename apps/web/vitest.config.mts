@@ -7,11 +7,6 @@ export default defineConfig({
 	plugins: [tsconfigPaths(), react()],
 	test: {
 		environment: "jsdom",
-		server: {
-			deps: {
-				inline: ["@barnebys/shared"],
-			},
-		},
 	},
 	resolve: {
 		alias: {
