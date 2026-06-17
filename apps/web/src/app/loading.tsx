@@ -1,5 +1,5 @@
 import { LotCardSkeleton } from "@/src/components/LotCardSkeleton";
-import { PAGE_SIZE } from "@/src/hooks/useLotSearch";
+import { PAGE_SIZE } from "@/src/lib/constants";
 
 export default function Loading () {
 	return (

@@ -2,14 +2,14 @@
 
 import { useMemo, useState } from "react";
 import type { Lot, SortOption } from "@/src/types/lot";
-import { PAGE_SIZE, useLotSearch } from "@/src/hooks/useLotSearch";
+import { useLotSearch } from "@/src/hooks/useLotSearch";
 import { FilterBar } from "@/src/components/FilterBar";
 import { Header } from "@/src/components/Header";
 import { LotCard } from "@/src/components/LotCard";
 import { LotCardSkeleton } from "@/src/components/LotCardSkeleton";
 import { LotModal } from "@/src/components/LotModal";
 import { Pagination } from "@/src/components/Pagination";
-import { COUNTRY_NAMES } from "@/src/lib/constants";
+import { COUNTRY_NAMES, PAGE_SIZE } from "@/src/lib/constants";
 
 export default function Home () {
 	const [selectedLot, setSelectedLot] = useState<Lot | null>(null);

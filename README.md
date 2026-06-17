@@ -75,7 +75,7 @@ barnebys-auction-search/
 │       │   │   └── useLotSearch.test.ts  # 5 unit tests
 │       │   ├── lib/
 │       │   │   ├── api.ts            # API client (fetch wrapper)
-│       │   │   ├── constants.ts      # PLACEHOLDER_IMAGE, KEY, COUNTRY_NAMES
+│       │   │   ├── constants.ts      # PLACEHOLDER_IMAGE, PAGE_SIZE, KEY, COUNTRY_NAMES
 │       │   │   └── formatEstimate.ts # Currency + estimate formatting
 │       │   └── types/
 │       │       └── lot.ts            # Lot, LotsResponse, SortOption types
@@ -172,43 +172,50 @@ Response:
 ```json
 {
   "data": [
-    {
-      "id": "lot_001",
-      "title": "18th Century Oak Writing Desk",
-      "description": "...",
-      "category": "Furniture",
-      "country": "SE",
-      "country_name": "Sweden",
-      "auction_house": "Stockholms Auktionsverk",
-      "estimate_low": 4500,
-      "estimate_high": 6000,
-      "currency": "SEK",
-      "image_url": "https://..."
-    }
+	{
+	  "id": "lot_001",
+	  "title": "18th Century Oak Writing Desk",
+	  "description": "...",
+	  "category": "Furniture",
+	  "country": "SE",
+	  "country_name": "Sweden",
+	  "auction_house": "Stockholms Auktionsverk",
+	  "estimate_low": 4500,
+	  "estimate_high": 6000,
+	  "currency": "SEK",
+	  "image_url": "https://..."
+	}
   ],
   "meta": {
-    "total": 60,
-    "page": 1,
-    "limit": 12,
-    "totalPages": 5,
-    "hasNextPage": true,
-    "hasPreviousPage": false
+	"total": 60,
+	"page": 1,
+	"limit": 12,
+	"totalPages": 5,
+	"hasNextPage": true,
+	"hasPreviousPage": false
   },
   "filters": {
-    "categories": [
-      "Art",
-      "Furniture",
-      "Jewellery",
-      "..."
-    ],
-    "countries": [
-      "DE",
-      "FR",
-      "SE",
-      "UK",
-      "US",
-      "..."
-    ]
+	"categories": [
+	  "Art",
+	  "Furniture",
+	  "Jewellery",
+	  "..."
+	],
+	"countries": [
+	  {
+		"code": "DE",
+		"name": "Germany"
+	  },
+	  {
+		"code": "FR",
+		"name": "France"
+	  },
+	  {
+		"code": "SE",
+		"name": "Sweden"
+	  },
+	  "..."
+	]
   }
 }
 ```
@@ -225,8 +232,34 @@ Single lot by ID. Returns the `Lot` object or `404`.
   `apps/web/src/types/lot.ts`. This keeps each app self-contained without requiring a shared package or workspace
   configuration.
 - **Object.freeze on cache** — the in-memory lot data is frozen at startup to prevent accidental mutation.
-- **Country name mapping** — the API returns `country_name` alongside `country` (ISO code) so the frontend never needs
-  to map codes.
-- **Filters from filtered results** — the category/country dropdowns reflect only the currently matching lots, not all
-  60 items.
+- **Country name mapping** — the API returns `country_name` alongside `country` (ISO code) on each lot, and filter
+  country options include both `code` and `name`. The frontend never maps country codes.
+- **Filters from filtered results** — the category dropdown reflects only categories present in the currently matching
+  lots. Country options accumulate across searches so users can always see all available countries.
 - **Zod validation** — query parameters are validated with detailed error messages before processing.
+
+## Assumptions
+
+- The dataset (60 lots) is small enough for in-memory filtering and pagination on every request. A production system
+  would use a database with indexed queries.
+- Debouncing search at 300ms provides a good balance between responsiveness and API load.
+- The "country" filter refers to the auction house's country (the data field uses ISO 3166-1 alpha-2 codes).
+- Estimates are displayed in the lot's native currency without conversion.
+- The app targets modern browsers (last 2 versions) — no IE11 or legacy polyfills.
+- The frontend category filter accumulates available options across searches (so users can always see all categories
+  that have ever appeared), while country options reflect only the current filtered results.
+
+## What I'd Do Differently with More Time
+
+- **Database-backed queries** — replace the in-memory array with PostgreSQL and full-text search for title/description,
+  enabling much larger datasets.
+- **Cursor-based pagination** — offset pagination works for 60 items but a cursor model scales better.
+- **Currency conversion** — show estimates in a user-selected currency using a live exchange rate API.
+- **Server-Side Rendering** — use SSR/SSG for the initial page load instead of client-side fetching, improving SEO
+  and perceived performance.
+- **E2E testing** — add Playwright or Cypress tests for critical user journeys (search, filter, pagination, modal).
+- **Shared types package** — extract Lot/LotsResponse types into a monorepo workspace package to eliminate
+  duplication between API and web.
+- **Image optimization pipeline** — use Next.js `<Image>` with a proper image CDN instead of raw Unsplash URLs.
+- **Loading skeleton for modal** — the detail modal shows instantly from in-memory data, but a `/lots/:id` fetch
+  would benefit from a loading state.

@@ -43,6 +43,7 @@ export function FilterBar ({
 				onChange={(event: ChangeEvent<HTMLInputElement, HTMLInputElement>) => {
 					onQueryChange(event.target.value);
 				}}
+				aria-label="Search auction lots"
 				placeholder="Search title or description..."
 				className="h-12 rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-800 shadow-sm outline-none transition placeholder:text-stone-400 hover:border-amber-300 focus:border-amber-700 focus:ring-2 focus:ring-amber-700/20"
 			/>

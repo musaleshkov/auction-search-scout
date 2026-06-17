@@ -13,7 +13,7 @@ import type { Lot } from "./types.js";
 dotenv.config();
 
 const app = express();
-const port: string | 4000 = process.env.PORT || 4000;
+const port: number = Number(process.env.PORT) || 4000;
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);

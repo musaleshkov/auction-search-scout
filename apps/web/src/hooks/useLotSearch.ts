@@ -4,8 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { getLots } from "@/src/lib/api";
 import type { Lot, SortOption, LotsResponse } from "@/src/types/lot";
 import { useDebounce } from "@/src/hooks/useDebounce";
-
-export const PAGE_SIZE: number = Number(process.env.NEXT_PUBLIC_PAGE_SIZE) || 12;
+import { PAGE_SIZE } from "@/src/lib/constants";
 
 export type UseLotSearchReturn = {
 	lots: Lot[];

@@ -20,7 +20,7 @@ export type LotsQuery = {
 	country?: string;
 	sort: SortOption;
 	page: number;
-	limit: number;
+	limit?: number;
 };
 
 export type LotsResponse = {

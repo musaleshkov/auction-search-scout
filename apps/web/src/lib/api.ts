@@ -22,11 +22,18 @@ export async function getLots (params: GetLotsParams = {}): Promise<LotsResponse
 	if (params.page) url.searchParams.set("page", String(params.page));
 	if (params.limit) url.searchParams.set("limit", String(params.limit));
 
-	const response = await fetch(url.toString());
+  const response = await fetch(url.toString());
 
-	if (!response.ok) {
-		throw new Error("Failed to fetch lots");
-	}
+  if (!response.ok) {
+    let message = "Failed to fetch lots";
+    try {
+      const body = await response.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // Ignore JSON parse failures on error responses
+    }
+    throw new Error(message);
+  }
 
-	return response.json();
+  return response.json();
 }

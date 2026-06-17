@@ -42,7 +42,7 @@ export function buildLotsResponse (lots: readonly Lot[], query: LotsQuery): Lots
 		);
 	}
 
-	const limit: number = Math.min(Math.max(query.limit, 1), 60);
+	const limit: number = Math.min(Math.max(query.limit ?? 12, 1), 60);
 	const total: number = filteredLots.length;
 	const totalPages: number = Math.max(Math.ceil(total / limit), 1);
 	const page: number = Math.min(Math.max(query.page, 1), totalPages);
@@ -58,6 +58,7 @@ export function buildLotsResponse (lots: readonly Lot[], query: LotsQuery): Lots
 	const filteredCategories: string[] = Array.from(
 		new Set(filteredLots.map((lot: Lot) => lot.category)),
 	).sort();
+
 	const filteredCountries: string[] = Array.from(
 		new Set(filteredLots.map((lot: Lot) => lot.country)),
 	).sort();
