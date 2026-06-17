@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { getLots } from "../lib/api";
 import type { Lot, SortOption } from "../types/lot";
+import { SelectField } from "@/src/components/SelectField";
 
 const PAGE_SIZE = 12;
 
@@ -164,53 +165,54 @@ export default function Home () {
 							setPage(1);
 						}}
 						placeholder="Search title or description..."
-						className="rounded-xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700"
+						className="h-12 rounded-xl border border-stone-200 bg-white px-4 text-sm font-medium text-stone-800 shadow-sm outline-none transition placeholder:text-stone-400 hover:border-amber-300 focus:border-amber-700 focus:ring-2 focus:ring-amber-700/20"
 					/>
 
-					<select
+					<SelectField
+						label="Category"
 						value={category}
-						onChange={(event) => {
-							setCategory(event.target.value);
+						options={[
+							{ value: "", label: "All categories" },
+							...categories.map((item) => ({
+								value: item,
+								label: item,
+							})),
+						]}
+						onChange={(value) => {
+							setCategory(value);
 							setPage(1);
 						}}
-						className="rounded-xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700"
-					>
-						<option value="">All categories</option>
-						{categories.map((item) => (
-							<option key={item} value={item}>
-								{item}
-							</option>
-						))}
-					</select>
+					/>
 
-					<select
+					<SelectField
+						label="Country"
 						value={country}
-						onChange={(event) => {
-							setCountry(event.target.value);
+						options={[
+							{ value: "", label: "All countries" },
+							...countries.map((item) => ({
+								value: item,
+								label: item,
+							})),
+						]}
+						onChange={(value) => {
+							setCountry(value);
 							setPage(1);
 						}}
-						className="rounded-xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700"
-					>
-						<option value="">All countries</option>
-						{countries.map((item) => (
-							<option key={item} value={item}>
-								{item}
-							</option>
-						))}
-					</select>
+					/>
 
-					<select
+					<SelectField
+						label="Sort"
 						value={sort}
-						onChange={(event) => {
-							setSort(event.target.value as SortOption);
+						options={[
+							{ value: "none", label: "No sorting" },
+							{ value: "estimate-asc", label: "Estimate: Low to high" },
+							{ value: "estimate-desc", label: "Estimate: High to low" },
+						]}
+						onChange={(value) => {
+							setSort(value as SortOption);
 							setPage(1);
 						}}
-						className="rounded-xl border border-stone-300 px-4 py-3 outline-none focus:border-amber-700"
-					>
-						<option value="none">No sorting</option>
-						<option value="estimate-asc">Estimate: Low to high</option>
-						<option value="estimate-desc">Estimate: High to low</option>
-					</select>
+					/>
 				</section>
 
 				<div className="mb-4 flex items-center justify-between gap-4">
