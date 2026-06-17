@@ -242,7 +242,7 @@ Single lot by ID. Returns the `Lot` object or `404`.
 - Both the category and country dropdowns accumulate available filter options across searches (using a merge strategy),
   so users never lose previously seen values even if they aren't in the current result set.
 
-## What I'd Do Differently with More Time
+## What Can Be Done Differently with More Time
 
 - **Database-backed queries** — replace the in-memory array with PostgreSQL and full-text search for title/description,
   enabling much larger datasets.
