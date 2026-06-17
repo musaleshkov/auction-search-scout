@@ -100,24 +100,63 @@ export default function Home () {
 	}, [selectedLot]);
 
 	return (
-		<main className="min-h-screen bg-stone-50 text-stone-950">
+		<main
+			className="min-h-screen bg-[radial-gradient(circle_at_top_left,#fef3c7_0,transparent_32%),linear-gradient(to_bottom,#fafaf9,#f5f5f4)] text-stone-950">
 			<section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-				<header className="mb-8">
-					<p className="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-700">
-						Barnebys Technical Assessment
-					</p>
+				<header className="mb-8 overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
+					<div className="relative px-6 py-8 sm:px-8 lg:px-10">
+						<div
+							className="absolute inset-y-0 right-0 hidden w-1/3 bg-gradient-to-l from-amber-100/70 to-transparent lg:block" />
 
-					<h1 className="text-3xl font-bold tracking-tight sm:text-5xl">
-						Auction Lot Search
-					</h1>
+						<div className="relative max-w-4xl">
+							<div className="mb-5 flex flex-wrap items-center gap-3">
+        <span
+	        className="rounded-full bg-stone-950 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white">
+          Barnebys
+        </span>
 
-					<p className="mt-4 max-w-2xl text-stone-600">
-						Browse, search, filter, and sort auction lots from multiple
-						categories and country editions.
-					</p>
+								<span
+									className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">
+          Technical Assessment
+        </span>
+							</div>
+
+							<h1 className="max-w-3xl text-4xl font-bold tracking-tight text-stone-950 sm:text-5xl lg:text-6xl">
+								Discover auction lots across global markets
+							</h1>
+
+							<p className="mt-5 max-w-2xl text-base leading-7 text-stone-600 sm:text-lg">
+								Search, filter, sort, and explore curated lots from international
+								auction houses across art, antiques, jewellery, furniture, and
+								collectibles.
+							</p>
+
+							<div className="mt-7 grid gap-3 sm:grid-cols-3">
+								<div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+									<p className="text-2xl font-bold text-stone-950">60</p>
+									<p className="text-sm text-stone-500">Auction lots</p>
+								</div>
+
+								<div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+									<p className="text-2xl font-bold text-stone-950">
+										{categories.length || "—"}
+									</p>
+									<p className="text-sm text-stone-500">Categories</p>
+								</div>
+
+								<div className="rounded-2xl border border-stone-200 bg-stone-50 px-4 py-3">
+									<p className="text-2xl font-bold text-stone-950">
+										{countries.length || "—"}
+									</p>
+									<p className="text-sm text-stone-500">Countries</p>
+								</div>
+							</div>
+						</div>
+					</div>
 				</header>
 
-				<section className="mb-6 grid gap-3 rounded-2xl border border-stone-200 bg-white p-4 shadow-sm md:grid-cols-4">
+				<section
+					className="mb-6 grid gap-3 rounded-2xl border border-stone-200 bg-white/90 p-4 shadow-sm backdrop-blur md:grid-cols-4">
 					<input
 						value={query}
 						onChange={(event) => {
@@ -255,7 +294,7 @@ export default function Home () {
 								<p className="mt-3 line-clamp-3 min-h-[72px] text-sm leading-6 text-stone-600">
 									{lot.description}
 								</p>
-								
+
 							</div>
 						</article>
 					))}
