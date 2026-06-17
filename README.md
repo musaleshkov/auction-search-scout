@@ -195,27 +195,20 @@ Response:
 	"hasPreviousPage": false
   },
   "filters": {
-	"categories": [
-	  "Art",
-	  "Furniture",
-	  "Jewellery",
-	  "..."
-	],
-	"countries": [
-	  {
-		"code": "DE",
-		"name": "Germany"
-	  },
-	  {
-		"code": "FR",
-		"name": "France"
-	  },
-	  {
-		"code": "SE",
-		"name": "Sweden"
-	  },
-	  "..."
-	]
+    "categories": [
+      "Art",
+      "Furniture",
+      "Jewellery",
+      "..."
+    ],
+    "countries": [
+      "DE",
+      "FR",
+      "SE",
+      "UK",
+      "US",
+      "..."
+    ]
   }
 }
 ```
@@ -232,10 +225,10 @@ Single lot by ID. Returns the `Lot` object or `404`.
   `apps/web/src/types/lot.ts`. This keeps each app self-contained without requiring a shared package or workspace
   configuration.
 - **Object.freeze on cache** — the in-memory lot data is frozen at startup to prevent accidental mutation.
-- **Country name mapping** — the API returns `country_name` alongside `country` (ISO code) on each lot, and filter
-  country options include both `code` and `name`. The frontend never maps country codes.
-- **Filters from filtered results** — the category dropdown reflects only categories present in the currently matching
-  lots. Country options accumulate across searches so users can always see all available countries.
+- **Country name mapping** — the API returns `country_name` alongside `country` (ISO code) so the frontend never needs
+  to map codes.
+- **Filters from filtered results** — the category/country dropdowns reflect only the currently matching lots, not all
+  60 items.
 - **Zod validation** — query parameters are validated with detailed error messages before processing.
 
 ## Assumptions
@@ -246,8 +239,8 @@ Single lot by ID. Returns the `Lot` object or `404`.
 - The "country" filter refers to the auction house's country (the data field uses ISO 3166-1 alpha-2 codes).
 - Estimates are displayed in the lot's native currency without conversion.
 - The app targets modern browsers (last 2 versions) — no IE11 or legacy polyfills.
-- The frontend category filter accumulates available options across searches (so users can always see all categories
-  that have ever appeared), while country options reflect only the current filtered results.
+- Both the category and country dropdowns accumulate available filter options across searches (using a merge strategy),
+  so users never lose previously seen values even if they aren't in the current result set.
 
 ## What I'd Do Differently with More Time
 
