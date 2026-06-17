@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Lot } from "@/src/types/lot";
+import type { Lot, SortOption } from "@/src/types/lot";
 import { PAGE_SIZE, useLotSearch } from "@/src/hooks/useLotSearch";
 import { FilterBar } from "@/src/components/FilterBar";
 import { Header } from "@/src/components/Header";
@@ -10,7 +10,6 @@ import { LotCardSkeleton } from "@/src/components/LotCardSkeleton";
 import { LotModal } from "@/src/components/LotModal";
 import { Pagination } from "@/src/components/Pagination";
 import { COUNTRY_NAMES } from "@/src/lib/constants";
-import type { SortOption } from "@/src/types/lot";
 
 export default function Home () {
 	const [selectedLot, setSelectedLot] = useState<Lot | null>(null);
@@ -114,7 +113,7 @@ export default function Home () {
 					{hasFilters && (
 						<button
 							onClick={clearFilters}
-							className="text-sm font-medium text-amber-800 hover:underline"
+							className="cursor-pointer text-sm font-medium text-amber-800 hover:underline"
 						>
 							Clear filters
 						</button>
@@ -145,11 +144,12 @@ export default function Home () {
 						? Array.from({ length: PAGE_SIZE }, (_, i) => (
 							<LotCardSkeleton key={`skeleton-${i}`} />
 						))
-						: lots.map((lot: Lot) => (
+						: lots.map((lot: Lot, index: number) => (
 							<LotCard
 								key={lot.id}
 								lot={lot}
 								onClick={setSelectedLot}
+								isPriority={index < 4}
 							/>
 						))}
 				</section>

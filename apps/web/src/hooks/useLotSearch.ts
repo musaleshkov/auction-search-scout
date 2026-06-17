@@ -64,8 +64,14 @@ export function useLotSearch (): UseLotSearchReturn {
 				if (!isMounted) return;
 
 				setLots(response.data);
-				setCategories(response.filters.categories);
-				setCountries(response.filters.countries);
+				setCategories((prev) => {
+					const merged = new Set([...prev, ...response.filters.categories]);
+					return Array.from(merged);
+				});
+				setCountries((prev) => {
+					const merged = new Set([...prev, ...response.filters.countries]);
+					return Array.from(merged);
+				});
 				setTotal(response.meta.total);
 				setTotalPages(response.meta.totalPages);
 			} catch {
