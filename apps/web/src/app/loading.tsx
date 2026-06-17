@@ -1,5 +1,5 @@
 import { LotCardSkeleton } from "@/src/components/LotCardSkeleton";
-import { PAGE_SIZE } from "@/src/hooks/useLotSearch";
+import { PAGE_SIZE } from "@/src/lib/constants";
 
 export default function Loading () {
 	return (
@@ -7,7 +7,7 @@ export default function Loading () {
 			className="min-h-screen bg-[radial-gradient(circle_at_top_left,#fef3c7_0,transparent_32%),linear-gradient(to_bottom,#fafaf9,#f5f5f4)] text-stone-950">
 			<section className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
 				{/* Skeleton header */}
-				<header className="mb-8 overflow-hidden rounded-[2rem] border border-stone-200 bg-white shadow-sm">
+				<header className="mb-8 overflow-hidden rounded-4xl border border-stone-200 bg-white shadow-sm">
 					<div className="relative px-6 py-8 sm:px-8 lg:px-10">
 						<div className="mb-5 flex gap-3">
 							<div className="h-8 w-24 animate-pulse rounded-full bg-stone-200" />
