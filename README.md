@@ -8,7 +8,6 @@ This project is a mini auction search interface built with:
 
 - **Frontend:** Next.js 16, React 19, TypeScript, Tailwind CSS 4
 - **Backend:** Node.js, Express, TypeScript, Zod
-- **Shared:** TypeScript types via npm workspaces
 - **Testing:** Vitest, Testing Library
 - **Validation:** Zod (API query parameters)
 - **Security:** Rate limiting (express-rate-limit), CORS
@@ -36,26 +35,32 @@ countries.
 
 ```
 barnebys-auction-search/
-├── package.json              # Root workspace config with scripts
-├── packages/
-│   └── shared/               # Shared TypeScript types (Lot, LotsResponse, etc.)
-│       └── src/index.ts
+├── .gitignore
+├── README.md
+├── presentational part/           # UI screenshots & assets
+│   ├── desktop home.png
+│   ├── desktop home 2.png
+│   ├── Lighthouse desktop.png
+│   └── modal.png
 ├── apps/
-│   ├── api/                  # Express backend
-│   │   ├── data/lots.json    # 60 auction lots
+│   ├── api/                      # Express backend
+│   │   ├── data/
+│   │   │   └── lots.json         # 60 auction lots
 │   │   ├── src/
-│   │   │   ├── server.ts           # Express app, routes, middleware
-│   │   │   ├── lots.service.ts     # Filtering, sorting, pagination logic
+│   │   │   ├── server.ts         # Express app, routes, middleware
+│   │   │   ├── lots.service.ts   # Filtering, sorting, pagination logic
 │   │   │   ├── lots.service.test.ts
-│   │   │   └── types.ts            # Re-exports from @barnebys/shared
-│   │   └── .env.example
-│   └── web/                  # Next.js frontend
+│   │   │   └── types.ts          # Lot, LotsResponse, LotsQuery types
+│   │   ├── package.json
+│   │   └── tsconfig.json
+│   └── web/                      # Next.js frontend
 │       ├── src/
 │       │   ├── app/
 │       │   │   ├── layout.tsx        # Root layout with fonts
 │       │   │   ├── page.tsx          # Thin orchestration (~167 lines)
 │       │   │   ├── loading.tsx       # Suspense fallback (skeleton page)
-│       │   │   └── globals.css
+│       │   │   ├── globals.css       # Tailwind v4 import
+│       │   │   └── favicon.ico
 │       │   ├── components/
 │       │   │   ├── Header.tsx        # Hero banner with stat cards
 │       │   │   ├── FilterBar.tsx     # Search + category/country/sort selects
@@ -73,8 +78,14 @@ barnebys-auction-search/
 │       │   │   ├── constants.ts      # PLACEHOLDER_IMAGE, KEY, COUNTRY_NAMES
 │       │   │   └── formatEstimate.ts # Currency + estimate formatting
 │       │   └── types/
-│       │       └── lot.ts            # Re-exports from @barnebys/shared
-│       └── .env.example
+│       │       └── lot.ts            # Lot, LotsResponse, SortOption types
+│       ├── public/                   # Static assets (SVGs)
+│       ├── vitest.config.mts
+│       ├── next.config.ts
+│       ├── postcss.config.mjs
+│       ├── eslint.config.mjs
+│       ├── package.json
+│       └── tsconfig.json
 ```
 
 ## Getting Started
@@ -84,11 +95,20 @@ barnebys-auction-search/
 - Node.js >= 18
 - npm >= 9
 
-### Install
+### Install & Run
+
+Each app has its own `package.json` and dependencies. Install and run them separately:
 
 ```bash
-# From the project root, install all workspaces
+# Terminal 1 — Backend API
+cd apps/api
 npm install
+npm run dev                        # API at http://localhost:4000
+
+# Terminal 2 — Frontend
+cd apps/web
+npm install
+npm run dev                        # Web at http://localhost:3000
 ```
 
 ### Environment Variables
@@ -108,28 +128,24 @@ cp apps/web/.env.example apps/web/.env.local
 | `NEXT_PUBLIC_API_BASE_URL` | `http://localhost:4000` | API URL for the frontend  |
 | `NEXT_PUBLIC_PAGE_SIZE`    | `12`                    | Number of lots per page   |
 
-### Development
-
-```bash
-# Start both API and web concurrently
-npm run dev
-
-# Or start individually:
-npm run dev -w apps/api   # API at http://localhost:4000
-npm run dev -w apps/web   # Web at http://localhost:3000
-```
-
 ### Build
 
 ```bash
-npm run build
+# Build the API
+cd apps/api && npm run build
+
+# Build the frontend
+cd apps/web && npm run build
 ```
 
 ### Test
 
 ```bash
-npm test
-# API: 8 tests (lots.service) | Web: 5 tests (useLotSearch hook)
+# API tests (lots.service — 4 tests)
+cd apps/api && npm test
+
+# Web tests (useLotSearch hook — 5 tests)
+cd apps/web && npm test
 ```
 
 ## API Endpoints
@@ -156,43 +172,43 @@ Response:
 ```json
 {
   "data": [
-	{
-	  "id": "lot_001",
-	  "title": "18th Century Oak Writing Desk",
-	  "description": "...",
-	  "category": "Furniture",
-	  "country": "SE",
-	  "country_name": "Sweden",
-	  "auction_house": "Stockholms Auktionsverk",
-	  "estimate_low": 4500,
-	  "estimate_high": 6000,
-	  "currency": "SEK",
-	  "image_url": "https://..."
-	}
+    {
+      "id": "lot_001",
+      "title": "18th Century Oak Writing Desk",
+      "description": "...",
+      "category": "Furniture",
+      "country": "SE",
+      "country_name": "Sweden",
+      "auction_house": "Stockholms Auktionsverk",
+      "estimate_low": 4500,
+      "estimate_high": 6000,
+      "currency": "SEK",
+      "image_url": "https://..."
+    }
   ],
   "meta": {
-	"total": 60,
-	"page": 1,
-	"limit": 12,
-	"totalPages": 5,
-	"hasNextPage": true,
-	"hasPreviousPage": false
+    "total": 60,
+    "page": 1,
+    "limit": 12,
+    "totalPages": 5,
+    "hasNextPage": true,
+    "hasPreviousPage": false
   },
   "filters": {
-	"categories": [
-	  "Art",
-	  "Furniture",
-	  "Jewellery",
-	  "t.c"
-	],
-	"countries": [
-	  "DE",
-	  "FR",
-	  "SE",
-	  "UK",
-	  "US",
-	  "t.c"
-	]
+    "categories": [
+      "Art",
+      "Furniture",
+      "Jewellery",
+      "..."
+    ],
+    "countries": [
+      "DE",
+      "FR",
+      "SE",
+      "UK",
+      "US",
+      "..."
+    ]
   }
 }
 ```
@@ -205,6 +221,9 @@ Single lot by ID. Returns the `Lot` object or `404`.
 
 - **Server-side filtering & pagination** — all data processing happens in the API. The frontend is a thin presentation
   layer.
+- **TypeScript types co-located with each app** — API types are defined in `apps/api/src/types.ts` and frontend types in
+  `apps/web/src/types/lot.ts`. This keeps each app self-contained without requiring a shared package or workspace
+  configuration.
 - **Object.freeze on cache** — the in-memory lot data is frozen at startup to prevent accidental mutation.
 - **Country name mapping** — the API returns `country_name` alongside `country` (ISO code) so the frontend never needs
   to map codes.
