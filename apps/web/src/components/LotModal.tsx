@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import { useEffect, useRef } from "react";
 import type { Lot } from "@/src/types/lot";
 import { PLACEHOLDER_IMAGE, KEY } from "@/src/lib/constants";
 import { formatEstimate } from "@/src/lib/formatEstimate";
@@ -14,8 +13,6 @@ type LotModalProps = {
 export function LotModal ({ lot, onClose }: Readonly<LotModalProps>) {
 	const modalRef = useRef<HTMLDivElement>(null);
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
-	const [imageLoaded, setImageLoaded] = useState(false);
-	const [imageError, setImageError] = useState(false);
 
 	useEffect(() => {
 		const previousOverflow: string = document.body.style.overflow;
@@ -62,8 +59,6 @@ export function LotModal ({ lot, onClose }: Readonly<LotModalProps>) {
 		};
 	}, [onClose]);
 
-	const imageSrc = imageError ? PLACEHOLDER_IMAGE : lot.image_url;
-
 	return (
 		<div
 			role="dialog"
@@ -77,20 +72,15 @@ export function LotModal ({ lot, onClose }: Readonly<LotModalProps>) {
 				className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-2xl bg-white shadow-xl"
 				onClick={(event) => event.stopPropagation()}
 			>
-				<div className="relative h-72 w-full bg-stone-200">
-					{!imageLoaded && !imageError && (
-						<div className="absolute inset-0 animate-pulse bg-stone-300" />
-					)}
-					<Image
-						src={imageSrc}
-						alt={lot.title}
-						fill
-						sizes="(max-width: 672px) 100vw, 672px"
-						className="object-cover"
-						onLoad={() => setImageLoaded(true)}
-						onError={() => setImageError(true)}
-					/>
-				</div>
+				<img
+					src={lot.image_url}
+					alt={lot.title}
+					className="h-72 w-full object-cover"
+					loading="lazy"
+					onError={(event) => {
+						event.currentTarget.src = PLACEHOLDER_IMAGE;
+					}}
+				/>
 				<div className="p-6">
 					<div className="mb-3 flex items-center justify-between text-sm text-stone-500">
 						<span>{lot.category}</span>

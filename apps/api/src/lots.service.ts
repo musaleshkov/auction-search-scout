@@ -11,7 +11,7 @@ const COUNTRY_NAMES: Record<string, string> = {
 	BE: "Belgium",
 };
 
-export function getCountryName (code: string): string {
+function getCountryName (code: string): string {
 	return COUNTRY_NAMES[code] ?? code;
 }
 

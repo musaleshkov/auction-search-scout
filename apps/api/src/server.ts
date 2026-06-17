@@ -7,13 +7,13 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { z } from "zod";
 
-import { buildLotsResponse, getCountryName } from "./lots.service.js";
+import { buildLotsResponse } from "./lots.service.js";
 import type { Lot } from "./types.js";
 
 dotenv.config();
 
 const app = express();
-const port: number = Number(process.env.PORT) || 4000;
+const port: string | 4000 = process.env.PORT || 4000;
 
 const __filename: string = fileURLToPath(import.meta.url);
 const __dirname: string = path.dirname(__filename);
@@ -44,24 +44,17 @@ let cachedLots: readonly Lot[] = [];
 async function loadLotsAtStartup (): Promise<void> {
 	const dataPath: string =
 		process.env.LOTS_DATA_PATH || path.resolve(__dirname, "../data/lots.json");
+	const json: string = await fs.readFile(dataPath, "utf-8");
+	const data = JSON.parse(json) as Lot[] | { lots: Lot[] };
 
-	try {
-		const json: string = await fs.readFile(dataPath, "utf-8");
-		const data = JSON.parse(json) as Lot[] | { lots: Lot[] };
-
-		let raw: Lot[] = [];
-		if (Array.isArray(data)) {
-			raw = data;
-		} else if ("lots" in data && Array.isArray(data.lots)) {
-			raw = data.lots;
-		}
-
-		cachedLots = Object.freeze(raw) as readonly Lot[];
-	} catch (err) {
-		const message = err instanceof Error ? err.message : String(err);
-		console.error(`Failed to load lots data from "${dataPath}": ${message}`);
-		throw err;
+	let raw: Lot[] = [];
+	if (Array.isArray(data)) {
+		raw = data;
+	} else if ("lots" in data && Array.isArray(data.lots)) {
+		raw = data.lots;
 	}
+
+	cachedLots = Object.freeze(raw) as readonly Lot[];
 }
 
 // Zod schema for query validation
@@ -108,10 +101,7 @@ app.get("/lots/:id", (req, res) => {
 	}
 
 	res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
-	res.json({
-		...lot,
-		country_name: getCountryName(lot.country),
-	});
+	res.json(lot);
 });
 
 // Global error handler
@@ -127,34 +117,13 @@ app.use(
 	},
 );
 
-let server: ReturnType<typeof app.listen> | null = null;
-
 async function start (): Promise<void> {
 	await loadLotsAtStartup();
 	console.log(`Loaded ${cachedLots.length} auction lots`);
-	server = app.listen(port, () => {
+	app.listen(port, () => {
 		console.log(`API running on http://localhost:${port}`);
 	});
 }
-
-function gracefulShutdown (signal: string) {
-	console.log(`\nReceived ${signal}, shutting down gracefully...`);
-	if (server) {
-		server.close(() => {
-			console.log("Server closed.");
-			process.exit(0);
-		});
-		setTimeout(() => {
-			console.error("Forced shutdown after timeout.");
-			process.exit(1);
-		}, 10_000);
-	} else {
-		process.exit(0);
-	}
-}
-
-process.on("SIGTERM", () => gracefulShutdown("SIGTERM"));
-process.on("SIGINT", () => gracefulShutdown("SIGINT"));
 
 start().catch((err) => {
 	console.error("Failed to start server:", err);

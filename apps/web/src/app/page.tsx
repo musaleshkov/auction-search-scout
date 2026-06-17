@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import type { Lot } from "@/src/types/lot";
+import type { Lot, SortOption } from "@/src/types/lot";
 import { PAGE_SIZE, useLotSearch } from "@/src/hooks/useLotSearch";
 import { FilterBar } from "@/src/components/FilterBar";
 import { Header } from "@/src/components/Header";
@@ -76,16 +76,28 @@ export default function Home () {
 
 				<FilterBar
 					query={query}
-					onQueryChange={setQuery}
+					onQueryChange={(value: string) => {
+						setQuery(value);
+						setPage(1);
+					}}
 					category={category}
 					categoryOptions={categoryOptions}
-					onCategoryChange={setCategory}
+					onCategoryChange={(value: string) => {
+						setCategory(value);
+						setPage(1);
+					}}
 					country={country}
 					countryOptions={countryOptions}
-					onCountryChange={setCountry}
+					onCountryChange={(value: string) => {
+						setCountry(value);
+						setPage(1);
+					}}
 					sort={sort}
 					sortOptions={sortOptions}
-					onSortChange={setSort}
+					onSortChange={(value: SortOption) => {
+						setSort(value);
+						setPage(1);
+					}}
 				/>
 
 				<div

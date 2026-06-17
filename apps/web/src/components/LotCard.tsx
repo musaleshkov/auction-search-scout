@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-import Image from "next/image";
 import type { Lot } from "@/src/types/lot";
 import { PLACEHOLDER_IMAGE, KEY } from "@/src/lib/constants";
 import { formatEstimate } from "@/src/lib/formatEstimate";
@@ -14,13 +12,22 @@ type LotCardProps = {
 
 export function LotCard ({ lot, onClick, isPriority = false }: Readonly<LotCardProps>) {
 	const IMAGE_WIDTH = 600;
-	const [imgError, setImgError] = useState(false);
 
-	const imageSrc = imgError ? PLACEHOLDER_IMAGE : lot.image_url;
+	function getOptimizedImageUrl (url: string): string {
+		try {
+			const parsed = new URL(url);
+			if (parsed.hostname === "images.unsplash.com") {
+				parsed.searchParams.set("w", IMAGE_WIDTH.toString());
+			}
+			return parsed.toString();
+		} catch {
+			return url;
+		}
+	}
 
 	return (
 		<article
-			className="flex h-130 flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-sm"
+			className="flex h-[520px] flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left shadow-sm"
 		>
 			<button
 				type="button"
@@ -33,18 +40,16 @@ export function LotCard ({ lot, onClick, isPriority = false }: Readonly<LotCardP
 					}
 				}}
 			>
-				<div className="relative h-56 w-full shrink-0 bg-stone-200">
-					<Image
-						src={imageSrc}
-						alt={lot.title}
-						fill
-						sizes={`(max-width: 640px) 100vw, (max-width: 1024px) 50vw, ${IMAGE_WIDTH}px`}
-						className="object-cover"
-						priority={isPriority}
-						loading={isPriority ? undefined : "lazy"}
-						onError={() => setImgError(true)}
-					/>
-				</div>
+				<img
+					src={getOptimizedImageUrl(lot.image_url)}
+					alt={lot.title}
+					className="h-56 w-full shrink-0 bg-stone-200 object-cover"
+					loading={isPriority ? "eager" : "lazy"}
+					fetchPriority={isPriority ? "high" : undefined}
+					onError={(event) => {
+						event.currentTarget.src = PLACEHOLDER_IMAGE;
+					}}
+				/>
 
 				<div className="flex flex-1 flex-col p-5">
 					<div className="mb-3 flex items-center justify-between gap-3 text-sm text-stone-500">
