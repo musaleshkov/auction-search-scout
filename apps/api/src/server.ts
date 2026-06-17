@@ -1,20 +1,22 @@
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import fs from "node:fs";
+import rateLimit from "express-rate-limit";
+import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { z } from "zod";
 
 import { buildLotsResponse } from "./lots.service.js";
-import type { Lot, SortOption } from "./types.js";
+import type { Lot } from "./types.js";
 
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 4000;
+const port: string | 4000 = process.env.PORT || 4000;
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+const __filename: string = fileURLToPath(import.meta.url);
+const __dirname: string = path.dirname(__filename);
 
 app.use(
 	cors({
@@ -24,79 +26,106 @@ app.use(
 
 app.use(express.json());
 
-function loadLots (): Lot[] {
-	const filePath = path.join(__dirname, "../data/lots.json");
-	const json = fs.readFileSync(filePath, "utf-8");
+// Rate limiting — 100 requests per 15-second window per IP
+app.use(
+	rateLimit({
+		windowMs: 15_000,
+		max: 100,
+		standardHeaders: true,
+		legacyHeaders: false,
+		message: { error: "Too many requests, please try again later." },
+	}),
+);
 
+// Load lots asynchronously at startup — avoids blocking the event loop
+// Freeze prevents accidental mutation of the in-memory cache
+let cachedLots: readonly Lot[] = [];
+
+async function loadLotsAtStartup (): Promise<void> {
+	const dataPath: string =
+		process.env.LOTS_DATA_PATH || path.resolve(__dirname, "../data/lots.json");
+	const json: string = await fs.readFile(dataPath, "utf-8");
 	const data = JSON.parse(json) as Lot[] | { lots: Lot[] };
 
+	let raw: Lot[] = [];
 	if (Array.isArray(data)) {
-		return data;
+		raw = data;
+	} else if ("lots" in data && Array.isArray(data.lots)) {
+		raw = data.lots;
 	}
 
-	if ("lots" in data && Array.isArray(data.lots)) {
-		return data.lots;
-	}
-
-	return [];
+	cachedLots = Object.freeze(raw) as readonly Lot[];
 }
 
-function getString (value: unknown): string | undefined {
-	return typeof value === "string" && value.trim() ? value : undefined;
-}
+// Zod schema for query validation
+const ListLotsQuerySchema = z.object({
+	search: z.string().optional(),
+	category: z.string().optional(),
+	country: z.string().optional(),
+	sort: z.enum(["none", "estimate-asc", "estimate-desc"]).default("none"),
+	page: z.coerce.number().int().min(1).default(1),
+	limit: z.coerce.number().int().min(1).max(60).default(12),
+});
 
-function getNumber (value: unknown, fallback: number): number {
-	if (typeof value !== "string") {
-		return fallback;
-	}
-
-	const parsed = Number(value);
-
-	return Number.isFinite(parsed) ? parsed : fallback;
-}
-
-function getSortOption (value: unknown): SortOption {
-	if (
-		value === "estimate-asc" ||
-		value === "estimate-desc" ||
-		value === "none"
-	) {
-		return value;
-	}
-
-	return "none";
-}
-
+// Health check
 app.get("/health", (_req, res) => {
 	res.json({ status: "ok" });
 });
 
+// List lots with search, filter, sort, pagination
 app.get("/lots", (req, res) => {
-	const lots = loadLots();
+	const parsed = ListLotsQuerySchema.safeParse(req.query);
 
-	const response = buildLotsResponse(lots, {
-		search: getString(req.query.search),
-		category: getString(req.query.category),
-		country: getString(req.query.country),
-		sort: getSortOption(req.query.sort),
-		page: getNumber(req.query.page, 1),
-		limit: getNumber(req.query.limit, 12),
-	});
+	if (!parsed.success) {
+		return res.status(400).json({
+			error: "Invalid query parameters",
+			details: parsed.error.flatten().fieldErrors,
+		});
+	}
 
+	const query = parsed.data;
+	const lots = cachedLots;
+	const response = buildLotsResponse(lots, query);
+
+	// Cache for 30 seconds on CDN / browser (stale-while-revalidate for 5 minutes)
+	res.set("Cache-Control", "public, max-age=30, stale-while-revalidate=300");
 	res.json(response);
 });
 
+// Single lot by ID
 app.get("/lots/:id", (req, res) => {
-	const lots = loadLots();
-	const lot = lots.find((item) => item.id === req.params.id);
+	const lot: Lot | undefined = cachedLots.find((item) => item.id === req.params.id);
 
 	if (!lot) {
-		return res.status(404).json({ message: "Lot not found" });
+		return res.status(404).json({ error: "Lot not found" });
 	}
 
-	return res.json(lot);
+	res.set("Cache-Control", "public, max-age=60, stale-while-revalidate=300");
+	res.json(lot);
 });
 
-app.listen(port, () => {
-	console.log(`API running on http://localhost:${port}`);
+// Global error handler
+app.use(
+	(
+		err: Error,
+		_req: express.Request,
+		res: express.Response,
+		_next: express.NextFunction,
+	) => {
+		console.error("Unhandled error:", err.message);
+		res.status(500).json({ error: "Internal server error" });
+	},
+);
+
+async function start (): Promise<void> {
+	await loadLotsAtStartup();
+	console.log(`Loaded ${cachedLots.length} auction lots`);
+	app.listen(port, () => {
+		console.log(`API running on http://localhost:${port}`);
+	});
+}
+
+start().catch((err) => {
+	console.error("Failed to start server:", err);
+	process.exit(1);
 });

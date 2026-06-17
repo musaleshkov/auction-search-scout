@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { KEY } from "@/src/lib/constants";
 
 export type SelectOption = {
 	value: string;
@@ -40,16 +41,16 @@ export function SelectField ({
 		}
 
 		function handleKeyDown (event: KeyboardEvent) {
-			if (event.key === "Escape") {
+			if (event.key === KEY.Escape) {
 				setIsOpen(false);
 			}
 		}
 
-		document.addEventListener("mousedown", handleClickOutside);
+		document.addEventListener("click", handleClickOutside);
 		window.addEventListener("keydown", handleKeyDown);
 
 		return () => {
-			document.removeEventListener("mousedown", handleClickOutside);
+			document.removeEventListener("click", handleClickOutside);
 			window.removeEventListener("keydown", handleKeyDown);
 		};
 	}, []);
@@ -92,16 +93,16 @@ export function SelectField ({
 					className="absolute left-0 top-[calc(100%+0.5rem)] z-50 max-h-72 w-full overflow-y-auto rounded-2xl border border-stone-200 bg-white p-1 shadow-xl ring-1 ring-black/5"
 				>
 					{options.map((option) => {
-						const isSelected = option.value === value;
+						const isSelected = option?.value === value;
 
 						return (
 							<button
-								key={option.value}
+								key={option?.value}
 								type="button"
 								role="option"
 								aria-selected={isSelected}
 								onClick={() => {
-									onChange(option.value);
+									onChange(option?.value);
 									setIsOpen(false);
 								}}
 								className={`flex w-full cursor-pointer items-center justify-between rounded-xl px-3 py-2.5 text-left text-sm transition ${
@@ -110,7 +111,7 @@ export function SelectField ({
 										: "text-stone-700 hover:bg-amber-50 hover:text-amber-900"
 								}`}
 							>
-								<span className="truncate">{option.label}</span>
+								<span className="truncate">{option?.label}</span>
 
 								{isSelected && (
 									<span className="ml-3 text-xs text-white/80">Selected</span>

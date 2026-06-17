@@ -1,6 +1,6 @@
 import type { LotsResponse, SortOption } from "../types/lot";
 
-const API_BASE_URL =
+const API_BASE_URL: string =
 	process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
 
 type GetLotsParams = {
@@ -18,7 +18,7 @@ export async function getLots (params: GetLotsParams = {}): Promise<LotsResponse
 	if (params.search) url.searchParams.set("search", params.search);
 	if (params.category) url.searchParams.set("category", params.category);
 	if (params.country) url.searchParams.set("country", params.country);
-	if (params.sort) url.searchParams.set("sort", params.sort);
+	if (params.sort && params.sort !== "none") url.searchParams.set("sort", params.sort);
 	if (params.page) url.searchParams.set("page", String(params.page));
 	if (params.limit) url.searchParams.set("limit", String(params.limit));
 
