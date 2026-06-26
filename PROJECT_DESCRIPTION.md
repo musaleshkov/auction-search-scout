@@ -136,7 +136,7 @@ The frontend is a **thin presentation layer** — all data processing (filtering
 - **No state management library** (Redux, Zustand, etc.) — the app's state is simple enough for `useState` + `useEffect` in a single custom hook
 - **No UI component library** (MUI, shadcn/ui, etc.) — every component is hand-built to demonstrate component design and accessibility skills
 - **No shared types package** — types are intentionally co-located per app to keep each app self-contained without monorepo workspace tooling
-- **No database** — the 60-item dataset fits comfortably in memory for this assessment
+- **No database** — the 60-item dataset fits comfortably in memory for this project
 
 ---
 
@@ -446,7 +446,7 @@ This provides instant visual feedback — users see the page structure immediate
 
 A decorative header that serves three purposes:
 
-1. **Branding** — "Auction Scout" badge + "Portfolio Project" badge
+1. **Branding** — "Auction Scout" badge + "Open Source" badge
 2. **Value proposition** — Hero headline "Discover auction lots across global markets" with supporting copy
 3. **Live statistics** — Three stat cards showing:
    - **Auction lots**: Current `total` from the API (changes with filters)
@@ -1225,7 +1225,7 @@ Path Parameter:
 
 | Assumption | Why It Was Made | Production Alternative |
 |-----------|----------------|----------------------|
-| **Dataset is static and small (60 items)** | The assessment explicitly provides 60 lots | Would use PostgreSQL with full-text search indexes |
+| **Dataset is static and small (60 items)** | The dataset includes 60 curated lots | Would use PostgreSQL with full-text search indexes |
 | **In-memory filtering is acceptable** | 60 items filter in microseconds | Would use database `WHERE` clauses with GIN indexes |
 | **Offset pagination is sufficient** | 60 items won't have insert/delete race conditions | Would use cursor-based pagination for consistency |
 | **300ms debounce is the right balance** | Common UX pattern; tested and felt responsive | Could be A/B tested; might be personalized based on user typing speed |

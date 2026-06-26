@@ -19,7 +19,7 @@ export function Header ({ total, categoryCount, countryCount }: Readonly<HeaderP
             </span>
 						<span
 							className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">
-              Technical Assessment
+              Auction Discovery
             </span>
 					</div>
 
