@@ -1,6 +1,6 @@
-# Barnebys Auction Search
+# Auction Scout
 
-Technical assessment for the Senior Fullstack Developer role.
+A mini auction discovery platform — search, filter, and explore lots from international auction houses.
 
 ## Overview
 
@@ -34,7 +34,7 @@ countries.
 ## Project Structure
 
 ```
-barnebys-auction-search/
+auction-scout/
 ├── .gitignore
 ├── README.md
 ├── presentational part/           # UI screenshots & assets

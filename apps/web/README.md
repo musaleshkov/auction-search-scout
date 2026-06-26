@@ -1,6 +1,6 @@
-# Barnebys Auction Search
+# Auction Scout
 
-Mini auction search interface built for the Barnebys Senior Fullstack Developer technical assessment.
+A mini auction search interface for discovering lots from international auction houses.
 
 The application allows users to browse, search, filter, sort, paginate, and inspect auction lots through a clean
 responsive interface.
@@ -56,7 +56,7 @@ responsive interface.
 ## Project Structure
 
 ```txt
-barnebys-auction-search/
+auction-scout/
   apps/
     api/
       data/

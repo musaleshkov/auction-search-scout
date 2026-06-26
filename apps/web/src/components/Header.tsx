@@ -15,7 +15,7 @@ export function Header ({ total, categoryCount, countryCount }: Readonly<HeaderP
 					<div className="mb-5 flex flex-wrap items-center gap-3">
             <span
 	            className="rounded-full bg-stone-950 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-white">
-              Barnebys
+              Auction Scout
             </span>
 						<span
 							className="rounded-full border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-semibold uppercase tracking-[0.18em] text-amber-800">

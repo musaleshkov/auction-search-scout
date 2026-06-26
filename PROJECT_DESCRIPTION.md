@@ -1,4 +1,4 @@
-# Barnebys Auction Search — Comprehensive Project Description
+# Auction Scout — Comprehensive Project Description
 
 > A walkthrough of every decision, feature, and line of code in this full-stack auction search application.
 
@@ -23,7 +23,7 @@
 
 ## 1. Project Vision & Purpose
 
-This project is a **mini auction search interface** built as a technical assessment for a **Senior Fullstack Developer** role at **Barnebys**. It simulates a real-world auction discovery platform where users can browse, search, filter, sort, and inspect 60 curated auction lots from international auction houses across art, antiques, jewellery, furniture, and collectibles.
+This project is a **mini auction search interface** built to demonstrate a full-stack auction discovery platform where users can browse, search, filter, sort, and inspect 60 curated auction lots from international auction houses across art, antiques, jewellery, furniture, and collectibles.
 
 ### Core Problem It Solves
 
@@ -44,7 +44,7 @@ The application serves this use case with a clean, responsive, accessible interf
 ### Monorepo Structure
 
 ```
-barnebys-auction-search/
+auction-scout/
 ├── apps/
 │   ├── api/                     # Express backend (Node.js + TypeScript)
 │   │   ├── data/lots.json       # Static dataset: 60 auction lots
@@ -378,7 +378,7 @@ export type LotsResponse = {
 };
 ```
 
-**Note on co-located types:** These types are duplicated in the frontend (`apps/web/src/types/lot.ts`). This is intentional — each app is self-contained and can be deployed independently. A monorepo workspace with a shared `@barnebys/types` package would be the production approach (listed in Future Enhancements).
+**Note on co-located types:** These types are duplicated in the frontend (`apps/web/src/types/lot.ts`). This is intentional — each app is self-contained and can be deployed independently. A monorepo workspace with a shared `@auction-scout/types` package would be the production approach (listed in Future Enhancements).
 
 ---
 
@@ -403,8 +403,8 @@ The `lang="en"` attribute on `<html>` is critical for screen reader pronunciatio
 
 ```typescript
 export const metadata: Metadata = {
-  title: "Barnebys Auction Search",
-  description: "Mini auction search interface built with Next.js and Express",
+  title: "Auction Scout",
+  description: "Search, filter, and explore auction lots from international auction houses",
 };
 ```
 
@@ -446,7 +446,7 @@ This provides instant visual feedback — users see the page structure immediate
 
 A decorative header that serves three purposes:
 
-1. **Branding** — "Barnebys" badge + "Technical Assessment" badge
+1. **Branding** — "Auction Scout" badge + "Portfolio Project" badge
 2. **Value proposition** — Hero headline "Discover auction lots across global markets" with supporting copy
 3. **Live statistics** — Three stat cards showing:
    - **Auction lots**: Current `total` from the API (changes with filters)
@@ -901,7 +901,7 @@ Resetting to page 1 on any filter change prevents this entire class of bugs.
 **Rationale:**
 - **Independence** — each app can be built, tested, and deployed without the other
 - **Simplicity** — no monorepo workspace configuration, no package build step, no import aliases
-- **Deliberate trade-off** — the types are duplicated. In production, a shared `@barnebys/types` package would be the right call (listed in Future Enhancements). For this assessment, co-location was chosen to keep the project simple to set up and run.
+- **Deliberate trade-off** — the types are duplicated. In production, a shared `@auction-scout/types` package would be the right call (listed in Future Enhancements). For this portfolio project, co-location was chosen to keep the project simple to set up and run.
 
 ### 7. Modal Data from In-Memory State
 
@@ -1233,7 +1233,7 @@ Path Parameter:
 | **Estimates shown in native currency** | Simplest approach; no exchange rate dependency | Would add currency conversion with live rates and user preference |
 | **Modern browsers only (last 2 versions)** | Target audience is collectors/dealers using modern devices | Would add polyfills if IE11 support is required by business |
 | **Filter dropdowns merge (accumulate)** | Prevents UX jarring of options disappearing | For large datasets, would use faceted search with counts and a "show all" toggle |
-| **Types are co-located per app** | Keeps each app self-contained and simple to set up | Would extract to `@barnebys/types` shared package in a monorepo |
+| **Types are co-located per app** | Keeps each app self-contained and simple to set up | Would extract to `@auction-scout/types` shared package in a monorepo |
 | **API and frontend are separate processes** | Demonstrates full-stack separation | In production, could be behind the same reverse proxy or use API routes within Next.js |
 
 ### Trade-offs Made
@@ -1270,7 +1270,7 @@ If this were a production system with more development time, here's what would b
 - **API Integration Tests** — Use `supertest` to test Express routes end-to-end (not just the service layer)
 
 ### DevOps & Architecture
-- **Shared Types Package** — Extract `Lot`, `LotsResponse`, `LotsQuery` into `@barnebys/types` as a monorepo workspace package; eliminates type duplication
+- **Shared Types Package** — Extract `Lot`, `LotsResponse`, `LotsQuery` into `@auction-scout/types` as a monorepo workspace package; eliminates type duplication
 - **API Versioning** — Prefix routes with `/v1/` to allow future breaking changes without disrupting existing clients
 - **Monitoring & Observability** — Add structured logging, request tracing (OpenTelemetry), and metrics (Prometheus) for production monitoring
 - **Docker Compose** — Containerize both apps with a single `docker-compose up` command for zero-config local development
@@ -1328,4 +1328,4 @@ If this were a production system with more development time, here's what would b
 
 ---
 
-*Generated for the Barnebys Senior Fullstack Developer Technical Assessment — June 2026.*
+*Generated as a full-stack portfolio project — June 2026.*

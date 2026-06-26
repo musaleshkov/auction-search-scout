@@ -1,5 +1,5 @@
 {
-  "name": "barnebys-api",
+  "name": "auction-scout-api",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/server.js",

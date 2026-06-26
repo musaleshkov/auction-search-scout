@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "Barnebys Auction Search",
-	description: "Mini auction search interface built with Next.js and Express",
+	title: "Auction Scout",
+	description: "Search, filter, and explore auction lots from international auction houses",
 };
 
 export default function RootLayout({
